@@ -10,6 +10,8 @@
   justify: true,
   leading: 0.52em,
 )
+#set heading(numbering: "1.")
+=  向量空间
 行列式只能判别n个未知量,n个方程的线性方程组的解的情况，并且，当行列式为0时，n维向量空间就是从另外一个角度，来研究解的情况。
 
 取数域K上任意n个数组成的有序数组:
@@ -83,8 +85,10 @@ $ 有解 $<->$ $bold(b)$ 可以由$bold(a_1), bold(a_2), ... bold(a_n)$线性表
 向量空间和线性空间的关系：
 1. 向量空间只封闭了空间内的加法和标量乘法，而线性空间则封闭了更多运算。对于子空间同理。向量空间可以认为是线性空间的子集或者特例
 2. 向量空间，通常是有限维的
+3. 向量空间中的元素都是向量， 线性空间中的元素可以是向量、矩阵、或者其他东西
 
-== 线性相关的向量组和线性无关的向量组（important）
+= 线性相关的向量组和线性无关的向量组（important）
+== 向量组线性无关和相关的定义
 #let inr_express=$k_1 bold(a_1) + k_2 bold(a_2) + ... + k_n bold(a_n)$
 #let parameters=$(k_1,k_2, ..., k_n)$
 #let vectors=$(bold(a_1) , bold(a_2), ..., bold(a_n)  )$
@@ -92,6 +96,8 @@ $ 有解 $<->$ $bold(b)$ 可以由$bold(a_1), bold(a_2), ... bold(a_n)$线性表
 #let ceq = $<->$
 类似于我们前面提到的齐次线性方程组，对于公式:$#inr_express = bold(0)$, 如果有不全为0的系数$#parameters$,使得此公式成立，则称$#vectors$是#highlight()[线性相关]的；否则，即只有$k_1=k_2 = ... = k_n = 0$ 使得此公式成立，则称#vectors 是#highlight()[线性无关]的
 
+#highlight(fill:red)[线性无关时，如果我们尝试用$(bold(a_k))\\ bold(a_i)$ 表示$bold(a_i)$, 则需要除0，因此不存在任何系数能使得$(bold(a_k))\\ bold(a_i)$ 表示$bold(a_i)$, 这就是无关的内涵]
+=== 从其他角度理解向量组无关和相关
 线性相关和线性无关是线性代数中最为重要的概念之一，有以下几个方面的内涵（以下的向量组表示中，向量数$>1$）
 1. 从线性组合来看：
   - 线性相关：#vectors 可以通过不全为0的系数序列，组合成$bold(0)$向量
@@ -113,7 +119,7 @@ $ 有解 $<->$ $bold(b)$ 可以由$bold(a_1), bold(a_2), ... bold(a_n)$线性表
   - 如果 #vectors 整体线性无关，则 其任意一部分也线性无关 （考虑通过反证法），其实就是命题5. 的#highlight()[逆否命题]
 6. 如果#vectors 整体线性无关，则在每个向量上扩充其维度（相当于增加方程组个数），则扩充后的延伸组依然线性无关,这个证明很自然，因为使得扩充后的向量组的每个向量前$n$个分量，使得#inr_express = $bold(0)$ 的条件只有#parameters 全为0（这是定义），所以扩充后的向量组 使得该公式成立的条件依然只有#parameters 全为0
   - 如果#vectors 线性相关，则对于其中每个向量减去m个分量，得到的缩短向量组，也是线性相关的（6.的逆否命题）
-
+==== 6 的证明
 下面 证一下6.
 #let cvectors=$(bold(c_1), bold(c_2), ..., bold(c_n))$
 对于#vectors $in K^n$, 设其线性无关，那么设#cvectors $in K^(n+m)$ 是扩充后的向量组，根据线性无关定义:$
@@ -147,8 +153,16 @@ k_1 a_(n-m, 1) + k_2 a_(n-m, 2) + ... + k_n a_(n-m, n) = 0,
 ) 
 $
 根据线性相关定义，存在不全为0的#parameters 使得上述任意一项等式成立，从而对于缩短后的等式组也成立，从而得出缩短后的向量组，依然线性相关
+==== 2. 的证明
+这里再给一下 2. 的第三部分的证明
+1. 假设$bold(b)$ 可以被#vectors 线性表出，并且#vectors 线性相关，那么就有$t_1 bold(a_1) + t_2 bold(a_2) + ... t_n bold(a_n) = bold(b)$，同理，因为#vectors 线性相关，则$#inr_express = 0$ 中的系数$(k_1,k_2, ..., k_n)$ 不全为0， 那么令$m_i=(t_i + k_i)$, 则$m_i bold(a_1) + ... + m_i bold(a_n) =  k_1 bold(a_1) + ... + k_n bold(a_n) + t_1 bold(a_1) + ... + t_n bold(a_n) = bold(0) + bold(b) = bold(b)$, 又因为$(k_i)$ 不全为0，那么$(m_i) != (t_i)$. 从而$bold(b)$ 表出方式不唯一 
 
-命题 1 设向量组#vectors 线性无关，则$bold(beta)$ 可以被#vectors 表示的充要条件是$[bold(beta), #vectors]$ 线性相关。下面只证明充分性
+2. 假设$bold(b)$ 可以被#vectors 线性表出，并且#vectors 线性无关，我们假设b 有两个不同的表出方式，其系数$(s_i)$ 和$(t_i)$, 令$(m_i) = (s_i - t_i)$, 那么就有$sum_i m_i bold(a_i) = sum_i s_i bold(a_i) - sum_i t_i bold(a_i) = bold(b) - bold(b) = bold(0)$，又因为#vectors 线性无关，则#inr_express 中的系数$0 = (k_i) = (m_i) = (s_i - t_i) => s_i = t_i$，与假设矛盾，从而$bold(b)$的表出方式唯一
+
+补充2.的正面的主要目的是这个正面过程和后面的线性方程组的解联系比较紧密，同时我们可以看到，在代数领域，我们主要通过抽象化的各种解而不是具某个数值的解做逻辑推理。
+
+
+=== 命题 1 设向量组#vectors 线性无关，则$bold(beta)$ 可以被#vectors 表示的充要条件是$[bold(beta), #vectors]$ 线性相关。下面只证明充分性
 
 证，设#vectors 线性无关，且$[bold(beta), #vectors]$线性相关，则根据定义有:$#inr_express + l bold(beta) = bold(0)$，如果$l = 0$,则$#inr_express = bold(0) -> 与 已 知 条 件 矛 盾$，因此$l!=0$，从而有:$bold(beta) = -(#inr_express)/l$
 
