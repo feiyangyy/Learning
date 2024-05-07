@@ -92,4 +92,60 @@
 
 由此$C$ 可以由$A T$的某种运算关系表示，这种运算我们定义为矩阵的乘法（个人认为这个例子不是太好，作为引出矩阵乘法定义有点生硬，这里主要是为了练习排版和作图，才把这段记下来）
 == 矩阵乘法
-设$A=(a_(i j))_(#sn), B = (b_(i j))_(n 0times m), C = (c_(i j))_(s times m)$  并且有$c_(i j) = sum_k a_(i, k) b_(k, j)$ 用文字表达即，$c_(i j)$ 通过选定A 矩阵的第$i$ 行， 选定B矩阵的第$j$列，然后，从$k = 1->n$, 依次取A的第$i$行的第k个(列)元素 与 B矩阵第$j$列的第k个(行)元素相乘，然后求和
+设$A=(a_(i j))_(#sn), B = (b_(i j))_(n times m), C = (c_(i j))_(s times m)$  并且有$c_(i j) = sum_k a_(i, k) b_(k, j)$ 用文字表达即，$c_(i j)$ 通过选定A 矩阵的第$i$ 行， 选定B矩阵的第$j$列，然后，从$k = 1->n$, 依次取A的第$i$行的第k个(列)元素 与 B矩阵第$j$列的第k个(行)元素相乘，然后求和
+
+由矩阵乘法可见，能使得$a(i, k), b(k, j)$ 均有意义的条件是A矩阵的列数与B矩阵的行数相等，A矩阵也叫做#highlight()[左矩阵]， B矩阵也叫#highlight()[右矩阵]。 矩阵的乘法运算中涉及到 乘法和加法，有时候这个运算会被定义到计算机的DSP指令集中，叫做乘加运算(muladd)
+
+== 矩阵乘法性质
+以下均假设所引用的矩阵可以相乘
+=== 结合律 $A B C = (A B)C = A(B C)$
+#let nm = $n times m$
+#let mr = $m times r$
+#let sr = $s times r$
+#let ma= $A_(#sn)$;#let mb =$B_(#nm)$ 
+#let b0 =$bold(0)$
+设$A=(a_(i j))_(#sn), B = (b_(i j))_(#nm) C= (c_(i j))_(m times r)$
+在矩阵的形状上， 等式两边都是#sr 矩阵。 下面证明其每个元素相等
+
+$((A B)C)_(i j) = sum_k [(A B)_(i k) c_(k j)] = sum_k {[sum_l a_(i l) b_(l k)] c_(k j)}  = sum_k sum_l [a_(i l) b_(l k) c_(k j)] -> c_(k j) 乘 法 分 配 到 左 侧\
+(A(B C))_(i j) = sum_k [a_(i k) (B C)_(k j)] = sum_k {a_(i k) [sum_l b_(k l) c_(l j)]} = sum_k sum_l [a_(i l) b_(l k) c_(k j)]
+ -> a_(i l) 乘 法 分 配 到 右 侧$
+ 可见两者相等
+
+ 与实数域里面的乘法的交换律不同，矩阵乘法一般不满足交换律，首先$A B$ 交换的$B A$ 就不一定能相乘。当$s != m$ 时，$#mb #ma$ 就没有定义。其次即便是$B A$ 能够相乘，其结果也可能和$A B$ 不同。比如 $s = m != n$时，$#ma #mb = C_(s times s), #mb #ma= D_(n times n)$. $C$ $D$形状不同
+
+ === 零因子
+ 设$A = mat(0, 1; 0, 0) , B = mat(0, 0; 0, 1;)，则 A B = mat(0, 1; 0, 0); B A = mat(0, 0;0, 0)$ 可见 $A != 0 且 B != 0 <==>^(不 能 得 出) A B != 或 B A = 0$
+
+对于#A，如果存在一个矩阵$#B != 0$能够使得 #A #B = #b0, 则把#A 称作一个左零因子，如果存在一个$#C  != #b0$，并且#C #A = #b0 则把A叫做一个右零因子。左右零因子统称为零因子
+
+=== 左分配律
+$A(B+C) = A B + A C$
+=== 右分配律
+$(B + C) A = B A + C A$
+#let bdef = $(b_(i j))_(#sn)$; #let cdef = $(c_(i j))_(#sn)$; #let aef = $(a_(i j))_(#nm)$
+
+下面对右分配律证明，设$B=#bdef,C = #cdef, A = #aef$，那么$[(B + C) A]_(i j) = sum_k (A+B)_(i k) c_(k j) = sum_k [(a_(i k) + b_(i k))]c_(k j) = sum_k a_(i k) c_(k j) + sum_k b(i k) c(k j) = B A + C A$ 得证
+
+左分配律证明方法类似
+
+可见矩阵乘法相比较数域中的乘法性质较差一些，矩阵间的乘法不一定存在，且，矩阵的乘法定律也比较受限
+
+=== 数量乘法规律
+$k(A B) = (k A)B = A (k B)$ 这是因为数量乘法可以提到求和符号外边，从而自然得证
+
+=== 单位矩阵
+#let idef =$bold(I)$
+对于n阶#highlight()[方阵]，只有对角线上的元素为1，其他全为0的矩阵，称为单位矩阵，记作$#idef _n$ 或者#idef, 容易验证:
+$#idef _s A_(#sn) = A_(#sn); A_(#sn) #idef _n = A_(#sn)$ ，我们证一下第一个$(#idef _s A_(#sn))_(i j) = sum_k #idef _(i k) a_(k j) = a_(i j) <== because cases(#idef _(i k) = 0 当 (k != i), #idef _(i k) = 1 当 (k = i))$ 
+
+如果 #A 是n阶方阵，那么$#idef A = A #idef = A$
+
+=== 数量矩阵
+对角线元素全为$k$，其余元素全为0的方阵称为数量矩阵，那么显而易见其可以表示为$k #idef in W$, 那么很自然有
+$
+k#idef + l#idef = (k + l)#idef in W \
+k(l #idef) = (k l)#idef in W \
+(k#idef)(l#idef) = (k l)#idef in W
+$
+因此可见$W$ 是一个封闭的空间（特别是第三个公式），注意其中第三个公式需要展开得出
