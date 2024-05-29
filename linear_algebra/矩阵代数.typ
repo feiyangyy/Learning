@@ -116,6 +116,32 @@ $forall y in O => y/2 in Z => f(y/2) = y$ 即，$y/2 in Z$ 是 $y in O$ 在映�
 
 有理数集也是可数集，找个时间证一下。
 
+== 线性映射
+#let bkn = $bold(K)^n$; #let bks = $bold(K)^s$
+#let ba=$bold(a)$; #let bb=$bold(b)$;#let bx=$bold(x)$
+设数域$K$上的向量空间有映射$#sym.sigma := bkn->bks$能满足线性条件两条规则:
+$
+forall, ba, bb; sigma(ba+bb) = sigma(ba) + sigma(bb) \
+sigma(k ba) = k sigma(ba)
+$
+这样的映射称为线性映射
+
+设$A$ 是数域的$K$ 上的$s times n$的矩阵. 令$ba in bkn, AA:bkn->bks, ba |->A ba$. 即$A$是一个映射，容易验证他也是一个线性映射。
+=== 性质1.
+设n元线性方程组$A bx = bb$ 有解$<=>exists ba in bkn, s.t. A ba = bb <=> exists ba in bkn, AA(ba) = bb <=> bb in Im AA$
+
+=== 性质2.
+$A bx = bb$有解，设$A = (ba_1, ba_2,...,ba_n)$, 则$bb in <ba_1, ba_2,...,ba_n>$, 因为所有有解的$bb$ 是由$AA$ 依据$bx$ 生成的, 而$bb$ 是$A$ 的列向量组的线性组合，从而$Im A =  <ba_1, ba_2,...,ba_n>$(这实际上需要严格的证明，此处只能说明$AA$的象是矩阵列空间的子空间)
+
+== 映射的核
+对于齐次线性方程组的解空间是$W$, 那么
+$
+bb in W, s.t. A bb = bold(0) <=> AA(bb)=bold(0)
+$ 从这点出发，我们设$sigma:bkn -> bks$， 设#bkn 的一个子集（类比上面的$W$），满足以下条件:
+$
+(bb in bkn, sigma(bb) = bold(0))
+$, 我们称其为$sigma$的核，记作Ker$sigma$, 由定义可见，$sigma$的核等价于其映射矩阵表示的齐次线性方程组的解空间
+
 = 矩阵的基本运算
 前面章节中，矩阵是通过线性方程组求解，我们研究其系数矩阵而直接引入的，除了线性方程组外，矩阵还可以表示具有关系型的表格、空间或平面中的变换等。本文主要就是介绍矩阵本身支持的运算及其性质。
 
@@ -682,6 +708,14 @@ $
 
 证明:
 使用数学归纳法证明，容易验证，$n=2$时成立，现在假设，$n=N$时成立，我们证明$n=N+1$时也成立
+$
+(bb_(N+1), bb_i) &= (ba_(N+1) - sum_k ((ba_(N+1), bb_k))/((bb_k, bb_k)) bb_k, bb_i) ,  1<=k <= N,   \
+&= (ba_(N+1), bb_i) - (sum_k ((ba_(N+1), bb_k))/((bb_k, bb_k)) bb_k, bb_i) = (ba_(N+1), bb_i) - ((ba_(N+1), bb_i))/((bb_i, bb_i)) (bb_i, bb_i) = 0
+$
+定理得证。至于两者等价是因为两个向量组的秩相等，故而等价。
+
+该定理给出了一个有$brn$ 中的一个线性无关组$avecs$构造出一个正交向量组的方法，该方法也称为#highlight()[施密特正交化]，如果我们把该正交向量组进一步单位化，则得到的就是一个标准正交基
+
 
 = 矩阵的特征值和特征向量（IMPORTANT）
 == 矩阵特征值定义
