@@ -83,4 +83,121 @@ $
 
 设$~$ 是#bs 上的一个等价关系，由所有等价类组成的集合称为#bs 对于$~$ 关系的商集，记作$bs \/~$。注意商集是一个集合，不是元素
 
-=
+= 矩阵相抵
+#let Mkn = $bold(M)_(s times n)$; #let Mnn = $bold(M)_n$
+#let M(body) = {
+  $body$
+}
+#Mab[K] 上的所有$s times n$的矩阵的集合记作#Mkn ,当$s = n$时，简记为#Mnn , 表示#Mab[K] 上所有n阶矩阵的集合。
+
+== 相抵定义： 
+#Mkn 上的矩阵$A$ 经过一系列初等行列变换得到$B$, 则称$A, B$是相抵的，记作$A~^(相 抵)B$.
+相抵是#Mkn 上的一个二元关系，容易验证，相抵满足等价关系的三条性质：
+1. 反身: $A$ 和自身相抵
+2. 对称: $A, B$ 相抵 等价于 $B, A$ 相抵
+3. 传递: $A,B,C$, 如果$A~B, B~C => A~C$
+
+相抵关系下，$A$的等价类称为其相抵类
+
+回忆: 矩阵的初等行变换等价于, 矩阵左乘以一系列初等矩阵（矩阵被视作行向量组合）；矩阵的初等列变换等价于矩阵右乘以一系列初等矩阵Q。从而矩阵的相抵关系可以表达为:
+$
+  B = (Pi_k P_k) A (Pi_k Q_k) = P A Q 
+$ <aa>
+@aa 中的 $P,Q$ 均是可逆矩阵
+
+== 定理
+#let rk = $r a n k$
+设$A in Mkn, rk(A) = r$, 如果$r > 0$, 则A相抵于矩阵:$mat(#Mab[I]_r, bold(0); #Mab[0],#Mab[0])$ ,这个()矩阵称为$A$的相抵标准形。如果$r = 0$, 那么$A$ 相抵于0矩阵。
+
+证明：
+1. 如果$r > 0$, 那么矩阵$A$可以经过初等行变换为简化阶梯型$J$, 但是$J$的列分布不一定是连续的，我们可以通过初等列变换，将主元的列分布控制位连续的，其形式如下:
+$
+mat(1, 0, 0, ..., 0, c_(1, r+1), ..., c_(1, n); 0, 1, 0, ..., 0, c_(2, r+1), ..., c_(2, n); 0, 0, 1, ..., 0, c_(3, r+1), ..., c_(3, n); ...; 0, 0, 0, ..., 1, c_(r, r+1), ..., c_(r, n);0, 0, 0, ..., 0, 0, ..., 0; ...; 0, 0, 0, ..., 0, 0, ..., 0)
+$
+这个矩阵的前r行，可以通过初等列变换将后面的列全部消去（如同矩阵初等行变换生成阶梯型一样），从而最终就变成形如$mat(#Mab[I]_r, bold(0); #Mab[0],#Mab[0])$ 的矩阵。这个变换过程只涉及初等行变换和列变换，从而矩阵与之相抵
+
+== 定理 矩阵相抵判定定理
+设$A, B in Mkn$, $A, B$ 相抵的充要条件是$rk(A) = rk(B)$
+()
+证明:
+1. 必要性，如果$A, B$ 相抵，根据定义，矩阵的初等行列变换不会改变矩阵的秩（注意不是行列式），从而$rk(A) = rk(B)$
+2. 充分性, 如果$rk(A) = rk(B)$，则它们的标准型相等，再根据相抵的传递性可知，$A,B$ 相抵·
+
+ 
+根据该定理，可以得知，对于$0 <= r <= min(s, n)$, $r$ 唯一决定了相抵类。这种称为相抵关系下的完全不变量。
+
+== 定义 不变量与完全不变量
+设$~$是#Mab[S]上的一个等价关系，一个量或者表达式对于等价类里的元素是相等的，则称该量或表达式是该关系下的一个不变量。如果能恰好完全决定等价类的一组不变量则称为完全不变量
+
+结合以上信息，我们可以有以下推论:
+$
+A in Mkn,rk(A) != 0 => A = P mat(#Mab[I]_r, bold(0); #Mab[0],#Mab[0])Q
+$ 
+
+=  广义逆矩阵
+#let inv(b) = [ $#b ^(-1)$]
+如果$A$ 是一个可逆矩阵，那么$A X A = A$ 的一个解是$X = #inv[A]$. 当A不可逆时，这个方程是否有解呢?
+== 定理
+设$A in Mkn, rk(A) = r > 0$, 则矩阵方程:$A X A = A$ 一定有解。 设$A = P mat(#Mab[I]_r, bold(0); bold(0), bold(0))Q$, P 是 s 阶矩阵，Q 是n阶矩阵。则该矩阵方程的解为:$X = #inv[Q] mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D])#inv[P]$. 其中$B in M_(r times (s - r)), C in M_((n-r) times r), D in M_((n-r) times (s-r))$, 矩阵$mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D])$ 是一个$n times s$矩阵
+
+证明:
+$
+A X A &= P mat(#Mab[I]_r, bold(0); bold(0), bold(0))Q  #inv[Q] mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D])#inv[P] A  \
+&= P mat(#Mab[I]_r, bold(0); bold(0), bold(0)) #Mab[I]_n mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D])#inv[P] A \
+&= P mat(#Mab[I]_r, bold(0); bold(0), bold(0)) mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D])#inv[P] A \
+&= P mat(#Mab[I]_r, bold(0); bold(0), bold(0)) mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D]) mat(#Mab[I]_r, bold(0); bold(0), bold(0)) Q
+$ <a1>
+@a1 中的左侧矩阵$mat(#Mab[I]_r, bold(0); bold(0), bold(0))$ 的列划分是$(r, n-r)$, 右侧矩阵$mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D])$的行划分是$(r, n-r)$,因此两者可以相乘(参考分块矩阵乘积，证明比较复杂), 其结果为:$mat(#Mab[I]_r, #Mab[B];;bold(0), bold(0))$, 从而:
+@a1 就可写作:
+$
+P mat(#Mab[I]_r, #Mab[B];;bold(0), bold(0))mat(#Mab[I]_r, bold(0); bold(0), bold(0)) Q = P  mat(#Mab[I]_r, bold(0); bold(0), bold(0)) Q = A
+$
+从而我们验证了这个定理，上面的定理中对$B C D$ 除了形状之外，没有特殊要求
+== 广义逆
+#let ginv(b) = { $#b ^(-)$;}
+设$A in Mkn$, 矩阵方程$A X A = A$的每一个解都称为$A$的广义逆矩阵，简称$A$的广义逆， 记作$#ginv[A]$ 根据定义显然$A #ginv[A] A = A$. 同时根据上述定理，$rk(A)=r, A  = P mat(#Mab[I]_r, bold(0); bold(0), bold(0))Q => X = #inv[Q] mat(#Mab[I]_r, #Mab[B]; ; #Mab[C], #Mab[D])#inv[P] = #ginv[A]$, 可见$#ginv[A]$通常是一个集合
+
+对于$bold(0)_(s times n)$ 任意$B in M_(n times s) => bold(0) B bold(0) = bold(0)_(s times n) => B = #ginv[0]$
+
+== 定理 非齐次线性方程组的相容性定理
+非齐次线性方程组$A #Mab[x] = #Mab[$beta$]$ 有解的充要条件是$#Mab[$beta$] = A #ginv[A] #Mab[$beta$]$
+
+证明：
+#let bb = $bold(b)$;#let bx = $bold(x)$; #let bbeta = $bold(beta)$
+1. 必要性:设$bb$ 是$A bx = bbeta$的解，那么$A bb = bbeta => A #ginv[A] (A bb) = bbeta, 又 A bb = bbeta => bbeta = A #ginv[A] bbeta$
+2. 充分性:$ bbeta = A #ginv[A] bbeta = A (#ginv[A] bbeta) => A [#ginv[A]bbeta] = bbeta $<a4> 从而$#ginv[A] bbeta $是$A bx = bbeta$的一个解
+
+== 定理 非齐次线性方程组的解的结构定理
+如果$A bx = bbeta$ 有解，则其通解为
+$
+  bx = #ginv[A] bbeta
+$
+证明：
+#let bgm =$bold(gamma)$
+设$bgm$ 是一个解，则$A bgm = bbeta$. 那么有:
+$
+  P mat(#Mab[I]_r, bold(0); bold(0), bold(0)) Q bgm &= bbeta \
+  mat(#Mab[I]_r, bold(0); bold(0), bold(0)) Q bgm &= #inv[P] bbeta 
+$ <a3>
+#let veca = $vec(#Mab[$Y_1$]_r, #Mab[$Y_2$]_(n - r))$
+#let vecb = $vec(#Mab[$Z_1$]_r, #Mab[$Z_2$]_(s - r))$
+#let matr = $mat(#Mab[I]_r, bold(0); bold(0), bold(0))$
+@a3 中,$Q$ 是n阶可逆矩阵，$bgm$是一个$n times 1$的向量，从而$Q bgm$ 是一个$n times 1$的矩阵（向量），将$Q bgm$ 写作$Q bgm = vec(#Mab[$Y_1$]_r, #Mab[$Y_2$]_(n - r))$. 同理$#inv[P] bbeta = vec(#Mab[$Z_1$]_r, #Mab[$Z_2$]_(s - r))$ 
+从而@a3 可以写作:
+$
+  matr veca = vecb => #Mab[$Z_1$]_r = #Mab[$Y_1$]_r, #Mab[$Z_2$]_(s-r) = bold(0) => #inv[P] bbeta = vec(Z_1, bold(0))
+$
+#let b0 = $bold(0)$
+这里要证明一个推论，就是$P_s$可逆时，$forall bx != bold(0), P bold(x) != bold(0)$. 设$exists bx != 0 s.t. P bx = b0$, 因为$P$是可逆矩阵$=>rk(P) = s => P bx = b0$ 只有0解，与假设矛盾,从而$P bx != b0$
+
+#let BC = $bold(C)$;#let BZ = $bold(Z)$;#let BY = $bold(Y)$
+从而$#inv[P] bbeta != b0 => #Mab[$Z_1$] != b0_r$, 因此设$#Mab[Z_1] = vec(k_1,k_2, ..., k_r), exists k_i != 0$; 根据前述广义逆定理，$#ginv[A]  = #inv[Q] mat(#Mab[I]_r, bold(B); bold(C), bold(D)) #inv[P]$, 我们将$bold(C)_((n-r)times(r))$ 写作$bold(C) = (b0, b0, ..., k_i^(-1)bold(Y)_2, ..., b0)$,这里要注意$bold(Y)_2$ 是一个列向量. 那么$BC BZ_1 = (b0, b0, ..., k_i^(-1)bold(Y)_2, ..., b0) vec(k_1,k_2, ..., k_r) = BY_2$，那么:
+$
+Q bgm = vec(BY_1, BY_2) = vec(BZ_1, BC BZ_1) = mat(bold(I)_r, b0; BC, b0)vec(BZ_1, b0) => \
+bgm = #inv[Q] mat(bold(I)_r, b0; BC, b0)vec(BZ_1, b0), because #inv[P] bbeta = vec(Z_1, bold(0)) => \
+bgm = #inv[Q] mat(bold(I)_r, b0; BC, b0) #inv[P] bbeta = #ginv[A] bbeta
+$
+
+我们也可以反过来验证，对于$#ginv[A]$, 由3.3. 定理可知，$bbeta = A #ginv[A] bbeta$ , 从而$ #ginv[A] bbeta$ 一定是$A bx = bbeta$的解
+
+综上，如果$A bx = bbeta$ 有解，则其解可表示为$x = #ginv[A] bbeta$
