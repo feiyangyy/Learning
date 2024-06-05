@@ -201,3 +201,35 @@ $
 我们也可以反过来验证，对于$#ginv[A]$, 由3.3. 定理可知，$bbeta = A #ginv[A] bbeta$ , 从而$ #ginv[A] bbeta$ 一定是$A bx = bbeta$的解
 
 综上，如果$A bx = bbeta$ 有解，则其解可表示为$x = #ginv[A] bbeta$
+
+== 齐次线性方程组的解的结构定理：
+$A bx = b0$ 的通解为:
+$
+  bx = (I_n - #ginv[A]A)Z, Z in K^n
+$<a5>
+证明:
+$
+Z in K^n,  A[(I_n - #ginv[A]A)Z] = A[(I_n - #ginv[A]A)]Z = (A - A#ginv[A]A) Z = b0
+$
+这里注意$#ginv[A] in M_(n times s)$, 同时这个证明只证明了$bx = (I_n - #ginv[A]A)Z, Z in K^n$ 是$A bx = b0$的解的一部分而不是全部，接下来要证明任意解的情况
+$
+bb s.t. A bb = b0, (I_n - #ginv[A] A) bb = bb - #ginv[A] (A bb) = bb - #ginv[A] b0 = bb => A (I_n - #ginv[A] A) bb  = b0
+$
+综上， 定理得证
+
+#highlight()[此处证明实际上有重复证明的情况，并且没有说明@a5 为何包含了全部解]
+1. 重复证明$bb in K^n, s.t. A bb = b0$ 而第一步证明时取得向量$Z in K^n $ 一定包含$bb$
+2. 没有包含全部情况$(I_n - #ginv[A]A)Z$ 会对$Z$ 做变换，验证全部情况，应当说明$A bx = b0$的解的空间和$(I_n - #ginv[A]A)Z$ 是同一个空间
+== 推论
+设$bbeta in K^n , bbeta != b0$, 则如果$A bx = bbeta$ 有解时，其通解为:
+$
+  bx = #ginv[A] bbeta + (I_n - #ginv[A]A)Z, Z in K^n
+$
+证明:
+由定理3.4. 知,$bx in {#ginv[A] bbeta}, s.t. A bx = bbeta$, 又$A bx = bbeta = bbeta + b0 = A bx + A bgm, A bgm = b0$, 由3.5. 知$bgm in {(I_n - #ginv[A]A)Z, Z in K^n}$ 从而$A bx + A bgm = #ginv[A]bbeta + (I_n - #ginv[A]A)Z, Z in k^n$
+
+== (略)设A是复数域上的$s times n$ 矩阵，那么
+$
+cases(A X A = A, X A X = X, (A X)^* = A X, (X A)^* = X A)
+$
+称为A的#highlight(fill: green)[Penrose]方程组，他的解叫做$A$ 的#highlight(fill: green)[Moore-Penrose] 广义逆，记作$A^+$
