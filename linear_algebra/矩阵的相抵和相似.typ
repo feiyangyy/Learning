@@ -233,3 +233,124 @@ $
 cases(A X A = A, X A X = X, (A X)^* = A X, (X A)^* = X A)
 $
 称为A的#highlight(fill: green)[Penrose]方程组，他的解叫做$A$ 的#highlight(fill: green)[Moore-Penrose] 广义逆，记作$A^+$
+
+= 矩阵的相似
+#highlight[相似仅对方阵而言有意义]
+== 相似定义
+设#Mab[A],#Mab[B] 是 数域K上的两个$n 阶$矩阵，并且存在一个$P_n$ 满足：
+$
+  #inv[P] A P = B 
+$<a6>
+那么称#Mab[A] #Mab[B] 是相似的，记作$A~B$,注意@a6 中乘积顺序不可更改。
+相似关系是一种等价关系：
+1. 反身: #Mab[A] 和自身相似，因为$I_n -> #inv[$I_n$] A I_n = A$ 
+2. 对称: $A~B -> B~A$， 因为$A~B <=> B=#inv[P]A P <=> P B #inv[P] = A(because (#inv[P]) ^(-1) = P ) => B~A $
+3. 传递:$A~B, B~C => A~C$, 因为$C = #inv[Q]B Q = #inv[P]#inv[Q] A Q P = (Q P)^(-1) A (Q P) => A~C$
+
+在相似关系下，$A$的等价类称为A的相似类
+
+== 相似的性质
+=== 1. 设$B_1 = #inv[P] A_1 P; B_2 = #inv[P] A_2 P$
+那么
+$
+B_1 + B_2 = #inv[P] (A_1 + A_2) P, 证:B_1 + B_2 = #inv[P]{A_1 P + A_2 P} = #inv[P]{A_1+A_2} P \
+B_1 B_2 = #inv[P] (A_1 A_2) P, 证:B_1 B_2 = #inv[P]A_1 P #inv[P] A_2 P = #inv[P] A_1 A_2 P \
+B_1^m = #inv[P]A_1^m P, 证：B_1 B_1 = #inv[P] A_1^2 P ==>^(数 学 归 纳 法) B_1^m = #inv[P]A_1^m P
+$
+=== 2. 相似矩阵行列式相等
+回忆矩阵的乘积的性质：
+1. $|A B| = |A||B|$
+
+那么$A~B => B = #inv[P] A P => |B| = |#inv[P]| |A P| =|#inv[P]| |A| |P| =^(数 值) |#inv[P]| |P| |A| = |#inv[P]P| |A| = |A|$
+这个证明过程中，要注意矩阵乘积是不可随便交换位置的，但是矩阵的行列式的乘积是可以的（其实质就是一堆数值相乘）
+
+=== 3. 相似的矩阵要么都可逆，要么都不可逆；可逆时，其逆矩阵也相似
+1. 由性质2. 知，如果$A~B$, $A$ 不可逆，那么$|A| = 0 => |B| = 0$, 从而$B$不可逆
+2. 如果$A~B$,$A$可逆，那么$|B| = |A| != 0$ ，从而$B$ 可逆
+3. $A~B, |A| != 0, #inv[B] = (#inv[P]A P)^(-1) = #inv[P] #inv[A] P => #inv[A] ~ #inv[B]$ 
+
+=== 4. $A~B => rk(A) = rk(B)$
+因为$B = #inv[P] A P$ 相当于$B$ 由 $A$ 经过一系列初等行列变换得到，这个过程中不改变矩阵的秩
+
+== 定义2. n阶矩阵$A_n$ 的主对角线上的元素之和称为$A$的迹，记作$tr(A)$
+$
+tr(A) = sum a_(i,i)
+$
+对于实数域上的矩阵，$tr(A) in RR$
+=== 命题，矩阵的迹具有以下性质
+1. 线性性质:
+$
+  tr(A + B) = tr(A) + tr(B) \
+  tr(k A) = k tr(A)
+$
+证明略
+2. 对称性质: $tr(A B) = tr(B A)$
+证明:
+$
+tr(A B) = sum_k (A B)_(k, k) = sum_k {sum_l a_(k,l) b_(l, k)} \
+tr(B A) = sum_k (B A)_(k, k) = sum_k {sum_l b_(k,l) a_(l, k)} = sum_l {sum_k a_(l, k) b_(k, l)} <=>^(l <-> k) sum_k {sum_l a_(k,l) b_(l,k)} = tr(A B)
+$
+这里注意下第二步的推导中交换求和顺序
+
+一般来说$A B != B A$, 但是$tr(A B) = tr(B A)$
+
+=== 相似的矩阵有相等的迹
+设$A~B => tr(B) = tr(#inv[P] A P) = tr(#inv[P] (A P)) =^(数 值) tr((A P) #inv[P]) = tr(A)$
+
+从而，矩阵的秩、行列式、迹 都是相似关系下的不变量，简称为#highlight()[相似不变量]
+
+相似关系最主要的价值在于使用较为简单的相似矩阵，研究其性质，从而得出原矩阵的性质。
+
+=== 可对角化定理
+如何判定$A_n$是否可以找到$P s.t. A ~ D$($D$为对角矩阵)， 如果有这样的矩阵，即$A ~ D$ 则称$A$是#highlight()[可对角化的]
+#let ba = $bold(a)$; #let avecs = $(ba_1,ba_2, ..., ba_n)$; #let larr = $(lambda_1, lambda_2, ..., lambda_n)$
+
+可对角化定理，$A_n$ 可对角化的充要条件是
+$
+exists avecs, larr, lambda_i in K s.t. A ba_i = lambda_i ba_i, 1 <= i <= n
+$
+#let diag = $d i a g$
+此时，令$P = avecs$ 则 $#inv[P]A P = diag larr$
+
+证明:
+$
+A~D=diag larr <=> #inv[P] A P = D => A P = P D => A avecs = avecs D => \
+(A ba_1, A ba_2, ..., A ba_n) = (ba_1 lambda_1, ba_2 lambda_2, ..., ba_n lambda_n) <=> \
+A ba_i = lambda_i ba_i
+$
+此处证明需要注意矩阵乘法时，将左右矩阵看做行列向量时，矩阵乘法的作用
+
+= 矩阵的特征值和特征向量（IMPORTANT）
+#let A = $A$
+#let lam = $lambda$
+#let idef = $bold(I)$
+== 矩阵特征值定义
+#let lam = $lambda$
+对于数据K上的n阶方阵，如果存在一个数$lam_0 in K$, 存在一个向量$#ba in K^n, #ba != #b0$, 使得,$A #ba = lam_0 #ba$,则$lam_0$ 称为A的一个特征值, #ba 称为A的属于$lam_0$的一个特征向量
+
+显然，如果#ba 是A的属于$lam_0$的一个特征向量，则$k ba, forall k!=0 => A(k#ba)= k (A #ba) = k (lam_0 #ba) = lam_0 (k #ba)$， 即$k ba$也是A的属于$lam_0$的一个特征向量。
+
+我们把矩阵看做一种变换，特征向量和特征值的含义就是，特征向量在矩阵A的变换下，以特征值做尺度变换，变换前后一定是共线的。某些情况下，矩阵变换一定会使得向量不共线（比如不是$n pi$的旋转）. 换句话说，矩阵的特征向量反映了矩阵在某些"方向上"的特殊作用.
+
+矩阵的特征值、特征向量的概念十分重要，主成分分析、特征值分解等都需要利用特征向量。
+
+
+
+== 矩阵特征值和特征向量的求解与判定
+
+设#A 是一个n阶矩阵，#lam 是一个变量，则行列式$|lam idef - A| = mat(delim:"|", lam - a_11, -a_12, ..., -a_(1 n); ..., -a_(n 1), -a_(n 2), ..., lam - a_(n n))$ 称为#A 的#highlight()[特征多项式]， 接下来说明如何求解或判定特征值以及特征向量
+
+设$lam_0$是A的一个特征值，#ba 是A的属于$lam_0$的一个特征向量，从而:
+$
+A#ba = lam_0 #ba, lam_0 in K, #ba in K^n, #ba != #b0 =>^(两 边 同 减 去 A#ba) #b0 = lam_0#ba - A#ba = (lam_0 idef #ba  - A#ba) = (lam_0 #idef - A)#ba = #b0 , #ba != #b0
+$
+从而#ba 是齐次方程组$(lam_0 idef - A)#bx =#b0$的一个非0解，这要求系数矩阵$(lam_0 idef - A)$的行列式必为0，这进一步要求$lam_0$是A的特征多项式$|lam idef - A| =0$的一个解。如果该多项式没有解，说明行列式必不为0，从而矩阵便不存在特征值和特征向量。
+
+我们回忆齐次线性方程组的解集结构:将所有自由变量分别取1， 其余分量写成这些变量的表达式，这些解就构成了齐次线性方程组解的空间的一个基。
+
+在$(lam_0 idef - A)#bx = #b0$ 有解的情况下，其解的空间的所有非0向量都是A 的属于$lam_0$的特征向量
+
+这样可以总结求特征值和特征向量的步骤：
+1. 求矩阵的特征多项式的根
+2. 对于每一个根$lam_0$，求解其构成的齐次线性方程组的基础解系
+3. 基础解系所张成的空间中的所有非0向量，都是矩阵的属于$lam_0$的特征向量
