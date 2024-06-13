@@ -308,7 +308,7 @@ $
 可对角化定理，$A_n$ 可对角化的充要条件是
 $
 exists avecs, larr, lambda_i in K s.t. A ba_i = lambda_i ba_i, 1 <= i <= n
-$
+$<a7>
 #let diag = $d i a g$
 此时，令$P = avecs$ 则 $#inv[P]A P = diag larr$
 
@@ -354,3 +354,35 @@ $
 1. 求矩阵的特征多项式的根
 2. 对于每一个根$lam_0$，求解其构成的齐次线性方程组的基础解系
 3. 基础解系所张成的空间中的所有非0向量，都是矩阵的属于$lam_0$的特征向量
+
+由步骤3.可知，从属于同一个特征值$lam_0$的特征向量，不一定就是共线的，齐次线性方程组的解的空间的基，是线性无关的，但是他们都是从属于$lam_0$的特征向量
+
+= 矩阵对角化的条件
+根据特征值定义，可以将@a7 表述为:$exists avecs$, 这是一个线性无关的向量组，使得$P=avecs, #inv[P]A P = diag{larr}$. 其中$lam_i 是 ba_i$所属的特征值。对角矩阵$diag{larr}$称为A的#highlight()[相似标准形],不考虑对角线元素的排列次序，$A$的相似标准形是唯一的
+#let bb = $bold(b)$
+#let bvecs = $(bb_1, bb_2, ..., bb_n)$
+== 定理，设$lam_1 != lam_2$ 并且 $lam_1, lam_2$ 是$A_n$的特征值，$avecs, bvecs$分别是从属于$lam_1, lam_2$的向量，并且它们(向量组)线性无关。则$avecs, bvecs$ 线性无关
+证明：
+该定理是要证明以下等式:
+$
+  avecs bold(k) + bvecs bold(l) =  avecs vec(k_1, k_2, ..., k_n) + bvecs vec(l_1, l_2, ..., l_n) = b0
+$ <a8>
+中系数向量$bold(k), bold(l)$ 全为#b0. @a8 两侧同时左乘$A$：
+$
+  A avecs bold(k) + A bvecs bold(l) = b0 =>\
+  lam_1 avecs bold(k) + lam_2 bvecs bold(l) = b0 
+$ <a9>
+$because lam_1 != lam_2$, 故 $lam_1, lam_2$ 不会全为0，设$lam_2$ 不为0，则@a8 左侧同乘以$lam_2$:
+$
+  lam_2 avecs bold(k) + lam_2 bvecs bold(l) = b0
+$ <a10>
+用@a10 - @a9 :
+$
+  (lam_2 - lam_1)avecs bold(k) = b0 => \ 
+  (lam_2 - lam_1) k_1 ba_1  + (lam_2 - lam_1) k_2 ba_12 + ... + (lam_2 - lam_1) k_n ba_n 
+$
+因为$avecs$ 线性无关 且 $lam_1 != lam_2 => bold(k) = b0$，将其代入@a8 中:
+$
+  bvecs bold(l) = b0
+$
+因为$bvecs$线性无关，故而$bold(l) = b0$ 从而得出@a8 中各项系数均为0，从而$avecs, bvecs$ 中各向量线性无关
