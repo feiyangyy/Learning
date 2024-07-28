@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "string": "cpp",
+    "z_syscalls.h": "c",
+    "z_utils.h": "c",
+    "z_elf.h": "c",
+    "syscall.h": "c",
+    "z_asm.h": "c",
+    "string_view": "cpp"
+  }
+}
