@@ -17,3 +17,16 @@ void *z_memcpy(void *dest, const void *src, size_t n)
 	return dest;
 }
 
+
+int z_memcmp(void* dest, const void* src, size_t n) {
+	unsigned char *d = dest;
+	const unsigned char *p = src, *e = p + n;
+	int idx = 1;
+	while (p < e) {
+		if(*d++ != *p++) {
+			return idx;
+		}
+		++idx;
+	}
+	return 0;
+}

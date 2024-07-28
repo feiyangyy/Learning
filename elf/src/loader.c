@@ -173,6 +173,23 @@ e_shstrndx:
 描述: 字符串表的索引，用于存储节的名称。
 #endif
 // 这里的sp 和fini 比较特殊
+#define ALIGNMENT 16 // 对齐要求
+#define Z_STK_SIZE (8*1024*1024)
+
+void* GetStk() {
+	int flags = (MAP_PRIVATE | MAP_ANONYMOUS);
+	// 映射之 ...
+	void* ptr =  z_mmap(NULL, Z_STK_SIZE + ALIGNMENT - 1, PROT_READ|PROT_WRITE|PROT_EXEC, flags, -1, 0);
+	unsigned long aligned_address = ((unsigned long )ptr + ALIGNMENT - 1) & ~(ALIGNMENT - 1);
+	if(aligned_address == (unsigned long)ptr) {
+		// ====》 走了这个branch, 说明已经align 了
+		z_printf("Already align!\n");
+	} else {
+		z_printf("Done align!\n");
+	}
+	return (void*)(aligned_address);
+}
+
 void z_entry(unsigned long *sp, void (*fini)(void))
 {
 
@@ -190,20 +207,27 @@ void z_entry(unsigned long *sp, void (*fini)(void))
 	void* cur_sp;
 	int sz_total = sizeof(ehdrs) + sizeof(ehdr) + sizeof(phdr) + sizeof(iter) + sizeof(argv) + sizeof(env)+ sizeof(p)
 	+ sizeof(elf_interp)+ sizeof(base)+ sizeof(entry)+ sizeof(file)+ sizeof(sz)+ sizeof(argc)+ sizeof(fd)+ sizeof(i)+ sizeof(cur_sp) + sizeof(int);
-	// int a[100];
-	// a[99] = 10;
 	int foo_1,foo_2;
 	__asm__ volatile ("mov %%rsp, %0" : "=r" (cur_sp));
-	uint64_t diff = (uint64_t)(cur_sp) - (uint64_t)(sp);
-	
-	
+	int diff = (uint64_t)(sp) - (uint64_t)(cur_sp);
+	// 注意这里不能搞void* 步长有问题
+	// TODO: 验证下C的void* 步长有多少....
+	unsigned long * stk = (unsigned long *)GetStk();
+	if(stk == MAP_FAILED) {
+		z_errx(-1, "Fucked!\n");
+		stk = NULL;
+	}
+	unsigned long* p_stk = (unsigned long*) stk;
 	// 这里的diff 有320字节
 	// 不太清楚为什么一直是320B。。。
 	z_printf("Cur sp:%x, parameter sp:%x, diff:%d, cur_stack_used=%d\n", (uint64_t)(cur_sp), (uint64_t)(sp), diff, sz_total);
 	// 蛋痛
 	// 这个是不是他自己在解析这些参数哦
 	// 按照参数传递的layout来
+	// 这里是最低字节，意味着是栈顶...
 	argc = (int)*(sp);
+	*(int*)(p_stk) = argc - 1;
+
 	// 注意这里的argv 是Char** 二级指针
 	// 所以这里造成一个问题，C++编写的loader 经过层层处理肯定是看不到（传进来的）sp这些东西了
 	argv = (char **)(sp + 1);
@@ -211,9 +235,18 @@ void z_entry(unsigned long *sp, void (*fini)(void))
 	env = p = (char **)&argv[argc + 1];
 	// 该死的++，这里的p是char** 也就是一次迭代sizeof(void*) 个步长
 	// 他这里主要是没有处理env， 如果要处理env的话可能更麻烦点
-	while (*p++ != NULL)
-		;
-	// 最后一个p
+	// 默认一定有一个参数
+	int idx = 0;
+	// 这里的p 是ENV!!!! fuck!
+	while (*p++ != NULL) {
+		#if 0
+		z_printf("env[%d]:%s\n", idx, env[idx]);
+		#endif
+		++idx;
+	}
+	z_printf("Total %d arguments!\n", idx);
+	// p的下一个，是av table的地址了
+	// Question av table的空间是否足够?
 	av = (void *)p;
 
 	(void)env;
@@ -291,14 +324,35 @@ void z_entry(unsigned long *sp, void (*fini)(void))
 
 		z_close(fd);
 		/* Looks like the ELF is static -- leave the loop. */
-		if (elf_interp == NULL)
+		// 如果没有interp 说明不需要shared lib，
+		if (elf_interp == NULL) {
+			z_printf("Got static!\n");
 			break;
+		}
 	}
 
 	/* Reassign some vectors that are important for
 	 * the dynamic linker and for lib C. */
 	// 配置一些KV键值对
+	#if 0
+typedef struct
+{
+  uint32_t a_type;		/* Entry type */
+  union
+    {
+      uint32_t a_val;		/* Integer value */
+      /* We use to have pointer elements added here.  We cannot do that,
+	 though, since it does not work when using 32-bit definitions
+	 on 64-bit platforms and vice versa.  */
+    } a_un;
+} Elf32_auxv_t;
+	#endif
+
 #define AVSET(t, v, expr) case (t): (v)->a_un.a_val = (expr); break
+	//  根据av_type 做一些配置
+	// 问题:av table 的空间是谁申请的，以及申请了多少呢? 这个会是一个问题，C++ 代码如何知道该申请多少个kv？
+	// Answer: 有系统调用可以获取到这个av table
+	idx = 0;
 	while (av->a_type != AT_NULL) {
 		switch (av->a_type) {
 		AVSET(AT_PHDR, av, base[Z_PROG] + ehdrs[Z_PROG].e_phoff);
@@ -309,26 +363,71 @@ void z_entry(unsigned long *sp, void (*fini)(void))
 		AVSET(AT_BASE, av, elf_interp ?
 				base[Z_INTERP] : av->a_un.a_val);
 		}
+		++idx;
 		++av;
 	}
 #undef AVSET
+	// 再往下迭代一个
+	// 这里可能不包括av...
+	// 这里的av 全是地址....
 	++av;
+	// 22个
+	z_printf("There are %d av tables!\n", idx);
 
 	/* Shift argv, env and av. */
 	// 一般argv[0] 是程序自己的名字，这里应该是为了让argv[0]正确
 	// 这里的字节数是怎么算的呢?
-	// argv1 拷贝到argv0 
-
+	// argv1 拷贝到argv0  包括env!
+	// 这里的&argv[0] 是char**, 也就是拷贝一堆指针
+	// 这里应该是从&argv[1] 一直拷贝到av(注意最后一个Pointer仍然有8B)
+	int len = (unsigned long)av - (unsigned long)&argv[1];
+	// 拷贝了1000 B， 为何这么多
+	z_printf("Will copy %d\n", len);
+	// 整个地址覆盖
+	// 所以这里的memcpy 完成了整个内存区域的移动
 	z_memcpy(&argv[0], &argv[1],
 		 (unsigned long)av - (unsigned long)&argv[1]);
-	/* SP points to argc. */
-	// 这个地方应该是argc -= 1
+	// 拷贝argv, 注意这里argv[0]已经拷贝过了。。。
+	z_memcpy((stk+1), &argv[0], len);
+	#if 0
+	int ret = z_memcmp((stk+1), &argv[0], len);
+	if(ret) {
+		z_printf("Mis match!\n");
+	} else {
+		// ===> 拷贝的OK，完全一致都不行，哈哈哈
+		z_printf("Mached!\n");
+	}
+	#endif
+	/* SP current points to argc. reduce it*/
+	// 这个地方应该是 argc -= 1
 	(*sp)--;
+	*(unsigned long *)(stk) = (*sp);
+	int ret = z_memcmp((stk), sp, len+sizeof(unsigned long));
+	if(ret) {
+		z_printf("Mis match! %d \n", ret);
+	} else {
+		// ===> 拷贝的OK，完全一致都不行，哈哈哈
+		z_printf("Mached!\n");
+	}
+	
+	// 这里做个试验，假设我自己申请一段空间给他做stack 不知道行不行...
+	// 不过这个要copy 内容了, 相当于手动构造哪些参数
+	// 使用C++开发的代码，
+
 	// 三个参数, 分别是入口地址、sp 以及z_fini
 	// 这里第一个参数是入口，第二个参数是sp 第一个参数用来跳转，第二个参数会被用来设置栈，第三个参数相当于abi标准，提供一个finished
-	// 这里跳转过后可能就不会再回来了
+	// 这里跳转过后可能就不会再回来了, 也不能再回来了，栈可能被破坏
+	z_printf("Will jump!\n");
+	#if 0
 	z_trampo((void (*)(void))(elf_interp ?
 			entry[Z_INTERP] : entry[Z_PROG]), sp, z_fini);
+	#else 
+	// 这里判断跳转哪个
+	// 估计是和这个sp 本身有关
+	// 可能还是少了什么东西 ... 
+	z_trampo((void (*)(void))(elf_interp ?
+			entry[Z_INTERP] : entry[Z_PROG]), stk, z_fini);
+	#endif
 	/* Should not reach. */
 	z_exit(0);
 }
